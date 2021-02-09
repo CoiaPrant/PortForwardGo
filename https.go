@@ -4,6 +4,7 @@ import (
 	"PortForwardGo/zlog"
 	"net"
 	"strings"
+
 	proxyprotocol "github.com/pires/go-proxyproto"
 )
 
@@ -11,10 +12,10 @@ var https_index map[string]string
 
 func HttpsInit() {
 	https_index = make(map[string]string)
-	zlog.Info("[HTTPS] Listening ",Setting.Config.Listen["Https"].Port)
-	l, err := net.Listen("tcp",":"+Setting.Config.Listen["Https"].Port)
+	zlog.Info("[HTTPS] Listening ", Setting.Config.Listen["Https"].Port)
+	l, err := net.Listen("tcp", ":"+Setting.Config.Listen["Https"].Port)
 	if err != nil {
-		zlog.Error("[HTTPS] Listen failed , Error: ",err)
+		zlog.Error("[HTTPS] Listen failed , Error: ", err)
 		return
 	}
 	for {
@@ -26,26 +27,23 @@ func HttpsInit() {
 	}
 }
 
-func LoadHttpsRules(i string){
+func LoadHttpsRules(i string) {
 	Setting.mu.RLock()
-	zlog.Info("Loaded [",i,"] (HTTPS)", Setting.Config.Rules[i].Listen, " => ", Setting.Config.Rules[i].Forward)
+	zlog.Info("Loaded [", i, "] (HTTPS)", Setting.Config.Rules[i].Listen, " => ", Setting.Config.Rules[i].Forward)
 	https_index[strings.ToLower(Setting.Config.Rules[i].Listen)] = i
 	Setting.mu.RUnlock()
 }
 
-func DeleteHttpsRules(i string){
+func DeleteHttpsRules(i string) {
 	Setting.mu.Lock()
-	zlog.Info("Deleted [",i,"] (HTTPS)", Setting.Config.Rules[i].Listen, " => ", Setting.Config.Rules[i].Forward)
-	delete(https_index,strings.ToLower(Setting.Config.Rules[i].Listen))
-	delete(Setting.Config.Rules,i)
+	zlog.Info("Deleted [", i, "] (HTTPS)", Setting.Config.Rules[i].Listen, " => ", Setting.Config.Rules[i].Forward)
+	delete(https_index, strings.ToLower(Setting.Config.Rules[i].Listen))
+	delete(Setting.Config.Rules, i)
 	Setting.mu.Unlock()
 }
 
-
-
-
 func https_handle(conn net.Conn) {
-		firstByte := make([]byte, 1)
+	firstByte := make([]byte, 1)
 	_, error := conn.Read(firstByte)
 	if error != nil {
 		conn.Close()
@@ -83,7 +81,7 @@ func https_handle(conn net.Conn) {
 	}
 
 	current := 0
-    if len(rest) == 0 {
+	if len(rest) == 0 {
 		conn.Close()
 		return
 	}
@@ -94,10 +92,10 @@ func https_handle(conn net.Conn) {
 		return
 	}
 
-		current += 3
-		current += 2
-		current += 4 + 28
-		sessionIDLength := int(rest[current])
+	current += 3
+	current += 2
+	current += 4 + 28
+	sessionIDLength := int(rest[current])
 	current += 1
 	current += sessionIDLength
 
@@ -114,7 +112,7 @@ func https_handle(conn net.Conn) {
 		return
 	}
 
-			current += 2
+	current += 2
 
 	hostname := ""
 	for current < restLength && hostname == "" {
@@ -125,7 +123,7 @@ func https_handle(conn net.Conn) {
 		current += 2
 
 		if extensionType == 0 {
-						current += 2
+			current += 2
 
 			nameType := rest[current]
 			current += 1
@@ -146,8 +144,8 @@ func https_handle(conn net.Conn) {
 		return
 	}
 
-	i,ok := https_index[hostname]
-	if !ok{
+	i, ok := https_index[hostname]
+	if !ok {
 		conn.Close()
 		return
 	}
@@ -168,7 +166,7 @@ func https_handle(conn net.Conn) {
 	}
 
 	if rule.ProxyProtocolVersion != 0 {
-		header := proxyprotocol.HeaderProxyFromAddrs(byte(rule.ProxyProtocolVersion),conn.RemoteAddr(),conn.LocalAddr())
+		header := proxyprotocol.HeaderProxyFromAddrs(byte(rule.ProxyProtocolVersion), conn.RemoteAddr(), conn.LocalAddr())
 		header.WriteTo(backend)
 	}
 
@@ -177,6 +175,6 @@ func https_handle(conn net.Conn) {
 	backend.Write(restLengthBytes)
 	backend.Write(rest)
 
-	go copyIO(conn, backend,i)
-	go copyIO(backend, conn,i)
+	go copyIO(conn, backend, i)
+	go copyIO(backend, conn, i)
 }
