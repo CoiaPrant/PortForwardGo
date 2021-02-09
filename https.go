@@ -1,10 +1,10 @@
 package main
 
 import (
-	"PortForwardGo/zlog"
 	"net"
 	"strings"
 
+	"github.com/CoiaPrant/PortForwardGo/zlog"
 	proxyprotocol "github.com/pires/go-proxyproto"
 )
 

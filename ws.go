@@ -1,12 +1,12 @@
 package main
 
 import (
-	"PortForwardGo/zlog"
 	"io"
 	"net"
 	"net/http"
 	"time"
 
+	"github.com/CoiaPrant/PortForwardGo/zlog"
 	proxyprotocol "github.com/pires/go-proxyproto"
 	"golang.org/x/net/websocket"
 )

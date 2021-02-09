@@ -1,7 +1,6 @@
 package main
 
 import (
-	"PortForwardGo/zlog"
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
@@ -19,6 +18,7 @@ import (
 	"time"
 
 	"gitee.com/kzquu/wego/util/ratelimit"
+	"github.com/CoiaPrant/PortForwardGo/zlog"
 	kcp "github.com/xtaci/kcp-go"
 )
 

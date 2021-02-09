@@ -1,6 +1,6 @@
-module PortForwardGo
+module github.com/CoiaPrant/PortForwardGo
 
-go 1.14
+go 1.15
 
 require (
 	gitee.com/kzquu/wego v0.0.0-20210125142742-9360edf6752a

@@ -4,10 +4,11 @@
 package main
 
 import (
-	"PortForwardGo/infra/trie"
 	"net"
 	"strconv"
 	"strings"
+
+	"github.com/CoiaPrant/PortForwardGo/infra/trie"
 )
 
 var MTUTrie *IPMTUTrie
